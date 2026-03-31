@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:horizontal_scroll_data_table/tables/data_table_theme.dart';
 import 'package:horizontal_scroll_data_table/tables/standard_data_table.dart';
 import 'package:horizontal_scroll_data_table/tables/table_pagination.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -42,24 +43,24 @@ class _MyHomePageState extends State<_MyHomePage> {
   final List<(String, int, String)> data = [
     ('Guilherme A. F. Brisida', 27, 'Lince Tech'),
     ('Guilherme Bailer', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
-    ('Guilherme F. Santos', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
+    ('João Reinert', 0, 'Lince Tech'),
   ];
 
   final List<(String, int, String)> data0 = [
@@ -101,190 +102,116 @@ class _MyHomePageState extends State<_MyHomePage> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: LinceTablePagination(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  LinceTablePagination(
                     page: _page + 1,
                     totalPages: _totalPages,
                     totalCount: data.length,
                     pageSeparator: 'de',
                     totalItemsLabel: 'itens',
-                    iconColor: Colors.red,
-                    buttonsColor: Colors.orange,
+                    iconColor: Colors.white,
+                    buttonsColor: Colors.blueAccent,
                     onPageChange: (page) {
                       setState(() {
                         _page = page - 1;
                       });
                     },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Expanded(
               child: Center(
                 child: SizedBox(
-                  // width: 1000,
-                  height: 500,
                   child: LinceDataTable(
                     placeholder: const Text('Nothing to see here'),
                     itemCount: _showEmpty ? 0 : data.length,
                     headingRowHeight: 40,
+                    dataRowHeight: 40,
                     padding: const EdgeInsets.all(8),
                     onSort: (index, sortKey, order) {
-                      // todo: here we apply the desired sorting method
                       print('index -> $index [$sortKey] = $order');
                     },
-                    // setting the minWidth is important to avoid overflowing
-                    // flex columns when the windows gets resized
                     minWidth: 1190,
                     maxWidth: 10000,
                     fixedColumns: [
                       LinceDataTableColumn.width(
-                        75,
-                        sortKey: 'id',
+                        alignment: ColumnAlignment.center,
+                        300,
+                        sortKey: 'Data',
                         sortable: true,
-                        header: Text('ID'),
+                        header: Text('Data'),
                       ),
                     ],
                     columns: const [
                       LinceDataTableColumn.width(
-                        75,
-                        sortKey: 'id',
+                        80,
+                        sortKey: '1 entrada',
                         sortable: true,
-                        header: Text('ID'),
+                        header: Text('1 entrada'),
                       ),
                       LinceDataTableColumn.width(
-                        75,
-                        sortKey: 'id',
+                        80,
+                        sortKey: '1 saida',
                         sortable: true,
-                        header: Text('ID'),
+                        header: Text('1 saida'),
                       ),
                       LinceDataTableColumn.width(
-                        300,
-                        sortKey: 'nome',
+                        80,
+                        sortKey: '2 entrada',
                         sortable: true,
-                        header: Text('Nome'),
-                        tooltip: 'Nome do funcionario',
+                        header: Text('2 entrada'),
                       ),
                       LinceDataTableColumn.width(
-                        175,
-                        sortKey: 'idade',
-                        header: Text('Idade'),
+                        80,
+                        sortKey: '2 saida',
+                        header: Text('2 saida'),
                       ),
                       LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
+                        80,
+                        sortKey: '3 entrada',
+                        header: Text('3 saida'),
                       ),
                       LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
+                        80,
+                        sortKey: '3 saida',
+                        header: Text('3 saida'),
                       ),
                       LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
+                        80,
+                        sortKey: '4 entrada',
+                        header: Text('4 entrada'),
                       ),
                       LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
-                      ),
-                      LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
-                      ),
-                      LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
-                      ),
-                      LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
-                      ),
-                      LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
-                      ),
-                      LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
-                      ),
-                      LinceDataTableColumn.width(
-                        100,
-                        sortKey: 'empresa',
-                        header: Text('Empresa'),
-                      ),
-                      LinceDataTableColumn.width(
-                        90,
-                        sortKey: 'acao',
-                        header: Text('Ação'),
+                        80,
+                        sortKey: '4 saida',
+                        header: Text('4 saida'),
                       ),
                     ],
                     fixedRowBuilder: (context, index) {
-                      return [const Text('0')];
+                      final now = DateTime.now();
+                      final date = DateTime(now.year, now.month, index + 1);
+
+                      final formattedDate = DateFormat(
+                        'dd/MM/yyyy',
+                      ).format(date);
+
+                      return [Text(formattedDate)];
                     },
                     rowBuilder: (context, index) {
-                      final (nome, idade, empresa) = data[index];
                       return [
-                        Row(
-                          children: [
-                            const Icon(Icons.person),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                nome,
-                                style: Theme.of(context).textTheme.bodyMedium!
-                                    .copyWith(
-                                      color: Colors.pink,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text('$idade'),
-                        Text(empresa),
-                        Text(empresa),
-                        Text(empresa),
-                        Text(empresa),
-                        Text(empresa),
-                        Text(empresa),
-                        Text(empresa),
-                        Text(empresa),
-                        Text(empresa),
-                        Text(empresa),
-                        Row(
-                          children: [
-                            IconButton(
-                              iconSize: 18,
-                              visualDensity: VisualDensity.compact,
-                              icon: const Icon(Icons.delete),
-                              onPressed: () {
-                                print('Call delete on index $index');
-                              },
-                            ),
-                            IconButton(
-                              iconSize: 18,
-                              visualDensity: VisualDensity.compact,
-                              icon: const Icon(Icons.edit),
-                              onPressed: () {
-                                print('Call edit on index $index');
-                              },
-                            ),
-                          ],
-                        ),
+                        Text('08:00'),
+                        Text('12:00'),
+                        Text('13:00'),
+                        Text('17:00'),
+                        Text('00:00'),
+                        Text('00:00'),
+                        Text('00:00'),
+                        Text('00:00'),
                       ];
                     },
                   ),
