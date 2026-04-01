@@ -186,6 +186,25 @@ class _LinceDataTableState extends State<LinceDataTable> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    _verticalController.addListener(() {
+      if (_fixedVerticalController.hasClients &&
+          _fixedVerticalController.offset != _verticalController.offset) {
+        _fixedVerticalController.jumpTo(_verticalController.offset);
+      }
+    });
+
+    _fixedVerticalController.addListener(() {
+      if (_verticalController.hasClients &&
+          _verticalController.offset != _fixedVerticalController.offset) {
+        _verticalController.jumpTo(_fixedVerticalController.offset);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeData =
         LinceDataTableTheme.maybeOf(context)?.themeData ??
@@ -266,144 +285,136 @@ class _LinceDataTableState extends State<LinceDataTable> {
                           behavior: ScrollConfiguration.of(
                             context,
                           ).copyWith(scrollbars: false),
-                          child: NotificationListener<ScrollNotification>(
-                            onNotification: (scrollInfo) {
-                              _verticalController.jumpTo(
-                                _fixedVerticalController.offset,
-                              );
-                              return true;
-                            },
-                            child: CustomScrollView(
-                              controller: _fixedVerticalController,
-                              slivers: [
-                                SliverPersistentHeader(
-                                  pinned: true,
-                                  delegate: _LinceDataTableHeader(
-                                    themeData: themeData,
-                                    height: widget.headingRowHeight,
-                                    content: Expanded(
-                                      child: Row(
-                                        children: widget.fixedColumns!.indexed
-                                            .map((column) {
-                                          final handleSort =
-                                          column.$2.sortable
-                                              ? widget.onSort
-                                              : null;
+                          child: CustomScrollView(
+                            controller: _fixedVerticalController,
+                            slivers: [
+                              SliverPersistentHeader(
+                                pinned: true,
+                                delegate: _LinceDataTableHeader(
+                                  themeData: themeData,
+                                  height: widget.headingRowHeight,
+                                  content: Expanded(
+                                    child: Row(
+                                      children: widget.fixedColumns!.indexed
+                                          .map((column) {
+                                        final handleSort =
+                                        column.$2.sortable
+                                            ? widget.onSort
+                                            : null;
 
-                                          final isSorted =
-                                              _sortIndex == column.$1;
+                                        final isSorted =
+                                            _sortIndex == column.$1;
 
-                                          Widget child = Row(
-                                            children: [
-                                              Expanded(
-                                                child: column.$2.header,
-                                              ),
-                                              if (isSorted)
-                                                switch (_sortingOrder) {
-                                                  SortingOrder.ascending =>
-                                                  const Icon(
-                                                    Icons.arrow_drop_up,
-                                                  ),
-                                                  SortingOrder.descending =>
-                                                  const Icon(
-                                                    Icons.arrow_drop_down,
-                                                  ),
-                                                  _ => const SizedBox(),
-                                                },
-                                            ],
-                                          );
-
-                                          child = Container(
-                                            width: column.$2.width,
-                                            padding: widget.itemPadding,
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                right:
-                                                column.$1 <
-                                                    widget
-                                                        .columns
-                                                        .length -
-                                                        1
-                                                    ? side
-                                                    : BorderSide.none,
-                                              ),
+                                        Widget child = Row(
+                                          children: [
+                                            Expanded(
+                                              child: column.$2.header,
                                             ),
+                                            if (isSorted)
+                                              switch (_sortingOrder) {
+                                                SortingOrder.ascending =>
+                                                const Icon(
+                                                  Icons.arrow_drop_up,
+                                                ),
+                                                SortingOrder.descending =>
+                                                const Icon(
+                                                  Icons.arrow_drop_down,
+                                                ),
+                                                _ => const SizedBox(),
+                                              },
+                                          ],
+                                        );
+
+                                        child = Container(
+                                          width: column.$2.width,
+                                          padding: widget.itemPadding,
+                                          decoration: BoxDecoration(
+                                            border: Border(
+                                              right:
+                                              column.$1 <
+                                                  widget
+                                                      .columns
+                                                      .length -
+                                                      1
+                                                  ? side
+                                                  : BorderSide.none,
+                                            ),
+                                          ),
+                                          child: child,
+                                        );
+
+                                        if (column.$2.tooltip != null) {
+                                          child = Tooltip(
+                                            message: column.$2.tooltip,
                                             child: child,
                                           );
+                                        }
 
-                                          if (column.$2.tooltip != null) {
-                                            child = Tooltip(
-                                              message: column.$2.tooltip,
-                                              child: child,
+                                        child = InkWell(
+                                          onTap: handleSort == null
+                                              ? null
+                                              : () {
+                                            _handleSortChange(
+                                              column.$1,
                                             );
-                                          }
+                                            handleSort(
+                                              column.$1,
+                                              column.$2.sortKey,
+                                              _sortingOrder,
+                                            );
+                                          },
+                                          child: child,
+                                        );
 
-                                          child = InkWell(
-                                            onTap: handleSort == null
-                                                ? null
-                                                : () {
-                                              _handleSortChange(
-                                                column.$1,
-                                              );
-                                              handleSort(
-                                                column.$1,
-                                                column.$2.sortKey,
-                                                _sortingOrder,
-                                              );
-                                            },
+                                        if (column.$2.width == null) {
+                                          child = Expanded(
+                                            flex: column.$2.flex ?? 1,
                                             child: child,
                                           );
+                                        }
 
-                                          if (column.$2.width == null) {
-                                            child = Expanded(
-                                              flex: column.$2.flex ?? 1,
-                                              child: child,
-                                            );
-                                          }
-
-                                          return child;
-                                        })
-                                            .toList(),
-                                      ),
+                                        return child;
+                                      })
+                                          .toList(),
                                     ),
                                   ),
                                 ),
-                                if (isEmpty)
-                                  SliverFillRemaining(
-                                    hasScrollBody: false,
-                                    child: Center(
-                                      child:
-                                      widget.placeholder ??
-                                          const SizedBox(),
-                                    ),
-                                  )
-                                else
-                                  SliverList.builder(
-                                    itemCount: widget.itemCount,
-                                    itemBuilder: (context, index) {
-                                      return _LinceDataTableWidthItem(
-                                        themeData: themeData,
-                                        index: index,
-                                        itemCount: widget.itemCount,
-                                        columns: widget.fixedColumns!,
-                                        constraints:
-                                        widget.dataRowHeight != null
-                                            ? BoxConstraints(
-                                          minWidth: useFixedWidth,
-                                          maxWidth: useFixedWidth,
-                                          minHeight:
-                                          widget.dataRowHeight!,
-                                          maxHeight:
-                                          widget.dataRowHeight!,
-                                        )
-                                            : null,
-                                        padding: widget.itemPadding,
-                                        builder: widget.fixedRowBuilder!,
-                                      );
-                                    },
+                              ),
+                              if (isEmpty)
+                                SliverFillRemaining(
+                                  hasScrollBody: false,
+                                  child: Center(
+                                    child:
+                                    widget.placeholder ??
+                                        const SizedBox(),
                                   ),
-                              ],
-                            ),
+                                )
+                              else
+                                SliverList.builder(
+                                  itemCount: widget.itemCount,
+                                  itemBuilder: (context, index) {
+                                    return _LinceDataTableWidthItem(
+                                      themeData: themeData,
+                                      index: index,
+                                      itemCount: widget.itemCount,
+                                      columns: widget.fixedColumns!,
+                                      constraints:
+                                      widget.dataRowHeight != null
+                                          ? BoxConstraints(
+                                        minWidth: useFixedWidth,
+                                        maxWidth: useFixedWidth,
+                                        minHeight:
+                                        widget.dataRowHeight!,
+                                        maxHeight:
+                                        widget.dataRowHeight!,
+                                      )
+                                          : null,
+                                      padding: widget.itemPadding,
+                                      builder: widget.fixedRowBuilder!,
+                                    );
+                                  },
+                                ),
+                            ],
                           ),
                         ),
                       ),
@@ -414,7 +425,8 @@ class _LinceDataTableState extends State<LinceDataTable> {
                 child: Scrollbar(
                   controller: _horizontalController,
                   trackVisibility: true,
-                  thumbVisibility: widget.thumbVisibility,
+                  thumbVisibility: true,
+                  thickness: 12.0,
                   child: SingleChildScrollView(
                     controller: _horizontalController,
                     scrollDirection: Axis.horizontal,
@@ -437,148 +449,141 @@ class _LinceDataTableState extends State<LinceDataTable> {
                           ),
                           child: ClipRRect(
                             borderRadius: borderRadius,
-                            child: NotificationListener<ScrollNotification>(
-                              onNotification: (scrollInfo) {
-                                _fixedVerticalController.jumpTo(
-                                  _verticalController.offset,
-                                );
-                                return true;
-                              },
-                              child: Scrollbar(
+                            child: Scrollbar(
+                              controller: _verticalController,
+                              trackVisibility: true,
+                              thumbVisibility: true,
+                              thickness: 12.0,
+                              child: CustomScrollView(
                                 controller: _verticalController,
-                                trackVisibility: true,
-                                thumbVisibility: widget.thumbVisibility,
-                                child: CustomScrollView(
-                                  controller: _verticalController,
-                                  slivers: [
-                                    SliverPersistentHeader(
-                                      pinned: true,
-                                      delegate: _LinceDataTableHeader(
-                                        themeData: themeData,
-                                        height: widget.headingRowHeight,
-                                        content: Expanded(
-                                          child: Row(
-                                            children: widget.columns.indexed.map((
-                                                column,
-                                                ) {
-                                              final handleSort =
-                                              column.$2.sortable
-                                                  ? widget.onSort
-                                                  : null;
+                                slivers: [
+                                  SliverPersistentHeader(
+                                    pinned: true,
+                                    delegate: _LinceDataTableHeader(
+                                      themeData: themeData,
+                                      height: widget.headingRowHeight,
+                                      content: Expanded(
+                                        child: Row(
+                                          children: widget.columns.indexed.map((
+                                              column,
+                                              ) {
+                                            final handleSort =
+                                            column.$2.sortable
+                                                ? widget.onSort
+                                                : null;
 
-                                              final isSorted =
-                                                  _sortIndex == column.$1;
+                                            final isSorted =
+                                                _sortIndex == column.$1;
 
-                                              Widget child = Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: column.$2.header,
-                                                  ),
-                                                  if (isSorted)
-                                                    switch (_sortingOrder) {
-                                                      SortingOrder.ascending =>
-                                                      const Icon(
-                                                        Icons.arrow_drop_up,
-                                                      ),
-                                                      SortingOrder.descending =>
-                                                      const Icon(
-                                                        Icons.arrow_drop_down,
-                                                      ),
-                                                      _ => const SizedBox(),
-                                                    },
-                                                ],
-                                              );
-
-                                              child = Container(
-                                                width: column.$2.width,
-                                                padding: widget.itemPadding,
-                                                decoration: BoxDecoration(
-                                                  border: Border(
-                                                    right:
-                                                    column.$1 <
-                                                        widget
-                                                            .columns
-                                                            .length -
-                                                            1
-                                                        ? side
-                                                        : BorderSide.none,
-                                                  ),
+                                            Widget child = Row(
+                                              children: [
+                                                Expanded(
+                                                  child: column.$2.header,
                                                 ),
+                                                if (isSorted)
+                                                  switch (_sortingOrder) {
+                                                    SortingOrder.ascending =>
+                                                    const Icon(
+                                                      Icons.arrow_drop_up,
+                                                    ),
+                                                    SortingOrder.descending =>
+                                                    const Icon(
+                                                      Icons.arrow_drop_down,
+                                                    ),
+                                                    _ => const SizedBox(),
+                                                  },
+                                              ],
+                                            );
+
+                                            child = Container(
+                                              width: column.$2.width,
+                                              padding: widget.itemPadding,
+                                              decoration: BoxDecoration(
+                                                border: Border(
+                                                  right:
+                                                  column.$1 <
+                                                      widget
+                                                          .columns
+                                                          .length -
+                                                          1
+                                                      ? side
+                                                      : BorderSide.none,
+                                                ),
+                                              ),
+                                              child: child,
+                                            );
+
+                                            if (column.$2.tooltip != null) {
+                                              child = Tooltip(
+                                                message: column.$2.tooltip,
                                                 child: child,
                                               );
+                                            }
 
-                                              if (column.$2.tooltip != null) {
-                                                child = Tooltip(
-                                                  message: column.$2.tooltip,
-                                                  child: child,
+                                            child = InkWell(
+                                              onTap: handleSort == null
+                                                  ? null
+                                                  : () {
+                                                _handleSortChange(
+                                                  column.$1,
                                                 );
-                                              }
+                                                handleSort(
+                                                  column.$1,
+                                                  column.$2.sortKey,
+                                                  _sortingOrder,
+                                                );
+                                              },
+                                              child: child,
+                                            );
 
-                                              child = InkWell(
-                                                onTap: handleSort == null
-                                                    ? null
-                                                    : () {
-                                                  _handleSortChange(
-                                                    column.$1,
-                                                  );
-                                                  handleSort(
-                                                    column.$1,
-                                                    column.$2.sortKey,
-                                                    _sortingOrder,
-                                                  );
-                                                },
+                                            if (column.$2.width == null) {
+                                              child = Expanded(
+                                                flex: column.$2.flex ?? 1,
                                                 child: child,
                                               );
+                                            }
 
-                                              if (column.$2.width == null) {
-                                                child = Expanded(
-                                                  flex: column.$2.flex ?? 1,
-                                                  child: child,
-                                                );
-                                              }
-
-                                              return child;
-                                            }).toList(),
-                                          ),
+                                            return child;
+                                          }).toList(),
                                         ),
                                       ),
                                     ),
-                                    if (isEmpty)
-                                      SliverFillRemaining(
-                                        hasScrollBody: false,
-                                        child: Center(
-                                          child:
-                                          widget.placeholder ??
-                                              const SizedBox(),
-                                        ),
-                                      )
-                                    else
-                                      SliverList.builder(
-                                        itemCount: widget.itemCount,
-                                        itemBuilder: (context, index) {
-                                          return _LinceDataTableWidthItem(
-                                            themeData: themeData,
-                                            index: index,
-                                            itemCount: widget.itemCount,
-                                            columns: widget.columns,
-                                            constraints:
-                                            widget.dataRowHeight != null
-                                                ? BoxConstraints(
-                                              minWidth: useWidth,
-                                              maxWidth: useWidth,
-                                              minHeight:
-                                              widget.dataRowHeight!,
-                                              maxHeight:
-                                              widget.dataRowHeight!,
-                                            )
-                                                : null,
-                                            padding: widget.itemPadding,
-                                            builder: widget.rowBuilder,
-                                          );
-                                        },
+                                  ),
+                                  if (isEmpty)
+                                    SliverFillRemaining(
+                                      hasScrollBody: false,
+                                      child: Center(
+                                        child:
+                                        widget.placeholder ??
+                                            const SizedBox(),
                                       ),
-                                  ],
-                                ),
+                                    )
+                                  else
+                                    SliverList.builder(
+                                      itemCount: widget.itemCount,
+                                      itemBuilder: (context, index) {
+                                        return _LinceDataTableWidthItem(
+                                          themeData: themeData,
+                                          index: index,
+                                          itemCount: widget.itemCount,
+                                          columns: widget.columns,
+                                          constraints:
+                                          widget.dataRowHeight != null
+                                              ? BoxConstraints(
+                                            minWidth: useWidth,
+                                            maxWidth: useWidth,
+                                            minHeight:
+                                            widget.dataRowHeight!,
+                                            maxHeight:
+                                            widget.dataRowHeight!,
+                                          )
+                                              : null,
+                                          padding: widget.itemPadding,
+                                          builder: widget.rowBuilder,
+                                        );
+                                      },
+                                    ),
+                                ],
                               ),
                             ),
                           ),

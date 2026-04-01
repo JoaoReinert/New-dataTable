@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:horizontal_scroll_data_table/tables/data_table_theme.dart';
 import 'package:horizontal_scroll_data_table/tables/standard_data_table.dart';
 import 'package:horizontal_scroll_data_table/tables/table_pagination.dart';
+import 'package:horizontal_scroll_data_table/util/text_form.dart';
 import 'package:intl/intl.dart';
+import 'package:fluent_ui/fluent_ui.dart' as fluent;
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,13 +21,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return fluent.FluentApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+
       home: const _MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -40,32 +40,6 @@ class _MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<_MyHomePage> {
-  final List<(String, int, String)> data = [
-    ('Guilherme A. F. Brisida', 27, 'Lince Tech'),
-    ('Guilherme Bailer', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-    ('João Reinert', 0, 'Lince Tech'),
-  ];
-
-  final List<(String, int, String)> data0 = [
-    ('Guilherme A. F. Brisida', 27, 'Lince Tech'),
-  ];
 
   bool _showEmpty = false;
   var _page = 0;
@@ -110,7 +84,7 @@ class _MyHomePageState extends State<_MyHomePage> {
                   LinceTablePagination(
                     page: _page + 1,
                     totalPages: _totalPages,
-                    totalCount: data.length,
+                    totalCount: 5,
                     pageSeparator: 'de',
                     totalItemsLabel: 'itens',
                     iconColor: Colors.white,
@@ -129,7 +103,7 @@ class _MyHomePageState extends State<_MyHomePage> {
                 child: SizedBox(
                   child: LinceDataTable(
                     placeholder: const Text('Nothing to see here'),
-                    itemCount: _showEmpty ? 0 : data.length,
+                    itemCount: _showEmpty ? 0 : 30,
                     headingRowHeight: 40,
                     dataRowHeight: 40,
                     padding: const EdgeInsets.all(8),
@@ -204,14 +178,14 @@ class _MyHomePageState extends State<_MyHomePage> {
                     },
                     rowBuilder: (context, index) {
                       return [
-                        Text('08:00'),
-                        Text('12:00'),
-                        Text('13:00'),
-                        Text('17:00'),
-                        Text('00:00'),
-                        Text('00:00'),
-                        Text('00:00'),
-                        Text('00:00'),
+                        _TextFormItem(text: '08:00'),
+                        _TextFormItem(text: '12:00'),
+                        _TextFormItem(text: '13:00'),
+                        _TextFormItem(text: '17:00'),
+                        _TextFormItem(text: '00:00'),
+                        _TextFormItem(text: '00:00'),
+                        _TextFormItem(text: '00:00'),
+                        _TextFormItem(text: '00:00'),
                       ];
                     },
                   ),
@@ -220,6 +194,34 @@ class _MyHomePageState extends State<_MyHomePage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _TextFormItem extends StatelessWidget {
+  const _TextFormItem({required this.text,});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+
+    final controller = TextEditingController(text: text);
+
+    return SizedBox(
+      width: 45,
+      height: 20,
+      child: OverlayTextForm(
+        text: Text(text),
+        controller: controller,
+        highlightColor: Colors.blue,
+        inputFormatters: [
+          MaskTextInputFormatter(
+            mask: '##:##',
+            initialText: controller.text,
+          ),
+        ],
       ),
     );
   }
