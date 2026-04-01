@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:horizontal_scroll_data_table/table_state.dart';
 import 'package:horizontal_scroll_data_table/tables/data_table_theme.dart';
 import 'package:horizontal_scroll_data_table/tables/standard_data_table.dart';
 import 'package:horizontal_scroll_data_table/tables/table_pagination.dart';
@@ -8,6 +9,7 @@ import 'package:horizontal_scroll_data_table/util/text_form.dart';
 import 'package:intl/intl.dart';
 import 'package:fluent_ui/fluent_ui.dart' as fluent;
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -40,7 +42,6 @@ class _MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<_MyHomePage> {
-
   bool _showEmpty = false;
   var _page = 0;
   final _totalPages = 10;
@@ -73,126 +74,135 @@ class _MyHomePageState extends State<_MyHomePage> {
             });
           },
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+        body: ChangeNotifierProvider<TableState>(
+          create: (context) => TableState(),
+          child: Consumer<TableState>(
+            builder: (_, state, _) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  LinceTablePagination(
-                    page: _page + 1,
-                    totalPages: _totalPages,
-                    totalCount: 5,
-                    pageSeparator: 'de',
-                    totalItemsLabel: 'itens',
-                    iconColor: Colors.white,
-                    buttonsColor: Colors.blueAccent,
-                    onPageChange: (page) {
-                      setState(() {
-                        _page = page - 1;
-                      });
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        LinceTablePagination(
+                          page: _page + 1,
+                          totalPages: _totalPages,
+                          totalCount: 5,
+                          pageSeparator: 'de',
+                          totalItemsLabel: 'itens',
+                          iconColor: Colors.white,
+                          buttonsColor: Colors.blueAccent,
+                          onPageChange: (page) {
+                            setState(() {
+                              _page = page - 1;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        child: LinceDataTable(
+                          placeholder: const Text('Nothing to see here'),
+                          itemCount: _showEmpty ? 0 : 30,
+                          headingRowHeight: 40,
+                          dataRowHeight: 40,
+                          padding: const EdgeInsets.all(8),
+                          onSort: (index, sortKey, order) {
+                            print('index -> $index [$sortKey] = $order');
+                          },
+                          minWidth: 1190,
+                          maxWidth: 10000,
+                          fixedColumns: [
+                            LinceDataTableColumn.width(
+                              alignment: ColumnAlignment.center,
+                              300,
+                              sortKey: 'Data',
+                              sortable: true,
+                              header: Text('Data'),
+                            ),
+                          ],
+                          columns: const [
+                            LinceDataTableColumn.width(
+                              80,
+                              sortKey: '1 entrada',
+                              sortable: true,
+                              header: Text('1 entrada'),
+                            ),
+                            LinceDataTableColumn.width(
+                              80,
+                              sortKey: '1 saida',
+                              sortable: true,
+                              header: Text('1 saida'),
+                            ),
+                            LinceDataTableColumn.width(
+                              80,
+                              sortKey: '2 entrada',
+                              sortable: true,
+                              header: Text('2 entrada'),
+                            ),
+                            LinceDataTableColumn.width(
+                              80,
+                              sortKey: '2 saida',
+                              header: Text('2 saida'),
+                            ),
+                            LinceDataTableColumn.width(
+                              80,
+                              sortKey: '3 entrada',
+                              header: Text('3 saida'),
+                            ),
+                            LinceDataTableColumn.width(
+                              80,
+                              sortKey: '3 saida',
+                              header: Text('3 saida'),
+                            ),
+                            LinceDataTableColumn.width(
+                              80,
+                              sortKey: '4 entrada',
+                              header: Text('4 entrada'),
+                            ),
+                            LinceDataTableColumn.width(
+                              80,
+                              sortKey: '4 saida',
+                              header: Text('4 saida'),
+                            ),
+                          ],
+                          fixedRowBuilder: (context, index) {
+                            final now = DateTime.now();
+                            final date = DateTime(
+                              now.year,
+                              now.month,
+                              index + 1,
+                            );
+
+                            final formattedDate = DateFormat(
+                              'dd/MM/yyyy',
+                            ).format(date);
+
+                            return [Text(formattedDate)];
+                          },
+                          rowBuilder: (context, index) {
+                            return [
+                              for (final (i, item) in state.list.indexed)
+                                _TextFormItem(
+                                  text: item,
+                                  index: index,
+                                  position: i,
+                                ),
+                            ];
+                          },
+                        ),
+                      ),
+                    ),
                   ),
                 ],
-              ),
-            ),
-            Expanded(
-              child: Center(
-                child: SizedBox(
-                  child: LinceDataTable(
-                    placeholder: const Text('Nothing to see here'),
-                    itemCount: _showEmpty ? 0 : 30,
-                    headingRowHeight: 40,
-                    dataRowHeight: 40,
-                    padding: const EdgeInsets.all(8),
-                    onSort: (index, sortKey, order) {
-                      print('index -> $index [$sortKey] = $order');
-                    },
-                    minWidth: 1190,
-                    maxWidth: 10000,
-                    fixedColumns: [
-                      LinceDataTableColumn.width(
-                        alignment: ColumnAlignment.center,
-                        300,
-                        sortKey: 'Data',
-                        sortable: true,
-                        header: Text('Data'),
-                      ),
-                    ],
-                    columns: const [
-                      LinceDataTableColumn.width(
-                        80,
-                        sortKey: '1 entrada',
-                        sortable: true,
-                        header: Text('1 entrada'),
-                      ),
-                      LinceDataTableColumn.width(
-                        80,
-                        sortKey: '1 saida',
-                        sortable: true,
-                        header: Text('1 saida'),
-                      ),
-                      LinceDataTableColumn.width(
-                        80,
-                        sortKey: '2 entrada',
-                        sortable: true,
-                        header: Text('2 entrada'),
-                      ),
-                      LinceDataTableColumn.width(
-                        80,
-                        sortKey: '2 saida',
-                        header: Text('2 saida'),
-                      ),
-                      LinceDataTableColumn.width(
-                        80,
-                        sortKey: '3 entrada',
-                        header: Text('3 saida'),
-                      ),
-                      LinceDataTableColumn.width(
-                        80,
-                        sortKey: '3 saida',
-                        header: Text('3 saida'),
-                      ),
-                      LinceDataTableColumn.width(
-                        80,
-                        sortKey: '4 entrada',
-                        header: Text('4 entrada'),
-                      ),
-                      LinceDataTableColumn.width(
-                        80,
-                        sortKey: '4 saida',
-                        header: Text('4 saida'),
-                      ),
-                    ],
-                    fixedRowBuilder: (context, index) {
-                      final now = DateTime.now();
-                      final date = DateTime(now.year, now.month, index + 1);
-
-                      final formattedDate = DateFormat(
-                        'dd/MM/yyyy',
-                      ).format(date);
-
-                      return [Text(formattedDate)];
-                    },
-                    rowBuilder: (context, index) {
-                      return [
-                        _TextFormItem(text: '08:00'),
-                        _TextFormItem(text: '12:00'),
-                        _TextFormItem(text: '13:00'),
-                        _TextFormItem(text: '17:00'),
-                        _TextFormItem(text: '00:00'),
-                        _TextFormItem(text: '00:00'),
-                        _TextFormItem(text: '00:00'),
-                        _TextFormItem(text: '00:00'),
-                      ];
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -200,9 +210,15 @@ class _MyHomePageState extends State<_MyHomePage> {
 }
 
 class _TextFormItem extends StatelessWidget {
-  const _TextFormItem({required this.text,});
+  const _TextFormItem({
+    required this.text,
+    required this.index,
+    required this.position,
+  });
 
   final String text;
+  final int index;
+  final int position;
 
   @override
   Widget build(BuildContext context) {
@@ -213,14 +229,13 @@ class _TextFormItem extends StatelessWidget {
       width: 45,
       height: 20,
       child: OverlayTextForm(
-        text: Text(text),
+        text: Text('Batida de ponto original: $text'),
         controller: controller,
         highlightColor: Colors.blue,
+        style: TextStyle(color: Colors.grey.withValues(alpha: 0.4)),
+        showActions: false,
         inputFormatters: [
-          MaskTextInputFormatter(
-            mask: '##:##',
-            initialText: controller.text,
-          ),
+          MaskTextInputFormatter(mask: '##:##', initialText: controller.text),
         ],
       ),
     );

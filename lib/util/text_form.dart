@@ -734,7 +734,7 @@ class _OverlayTextFormState<T> extends State<OverlayTextForm<T>> {
           decoration: WidgetStateProperty.resolveWith(
             (states) => BoxDecoration(
               color: Colors.white,
-              border: Border.all(color: Colors.grey),
+              border: Border.all(color: Color.fromRGBO(193, 193, 209, 1)),
               borderRadius: const BorderRadius.all(Radius.circular(4)),
             ),
           ),
@@ -867,7 +867,7 @@ class _AutoSuggestBoxOverlayState<T> extends State<_AutoSuggestBoxOverlay<T>> {
                                   padding: EdgeInsets.zero,
                                   child: Icon(
                                     material.Icons.cancel_outlined,
-                                    color: Colors.red,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -897,7 +897,7 @@ class _AutoSuggestBoxOverlayState<T> extends State<_AutoSuggestBoxOverlay<T>> {
                                   padding: EdgeInsets.zero,
                                   child: Icon(
                                     material.Icons.check_circle_outline,
-                                    color: Colors.green,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
