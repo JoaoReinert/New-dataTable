@@ -76,8 +76,10 @@ class _MyHomePageState extends State<_MyHomePage> {
         ),
         body: ChangeNotifierProvider<TableState>(
           create: (context) => TableState(),
-          child: Consumer<TableState>(
-            builder: (_, state, _) {
+          child: Builder(
+            builder: (context1) {
+              final state = Provider.of<TableState>(context1, listen: false);
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -108,7 +110,7 @@ class _MyHomePageState extends State<_MyHomePage> {
                       child: SizedBox(
                         child: LinceDataTable(
                           placeholder: const Text('Nothing to see here'),
-                          itemCount: _showEmpty ? 0 : 30,
+                          itemCount: _showEmpty ? 0 : 90,
                           headingRowHeight: 40,
                           dataRowHeight: 40,
                           padding: const EdgeInsets.all(8),
@@ -222,21 +224,46 @@ class _TextFormItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final clicked = context.select<TableState, bool>(
+      (state) => state.mapIndex["$position,$index"] ?? false,
+    );
 
-    final controller = TextEditingController(text: text);
+    print('çççççççç321');
+
+    if (clicked) {
+      final controller = TextEditingController(text: text);
+
+      return SizedBox(
+        width: 45,
+        height: 20,
+        child: OverlayTextForm(
+          text: Text('Batida de ponto original: $text'),
+          controller: controller,
+          highlightColor: Colors.blue,
+          style: TextStyle(color: Colors.grey.withValues(alpha: 0.4)),
+          showActions: false,
+          inputFormatters: [
+            MaskTextInputFormatter(mask: '##:##', initialText: controller.text),
+          ],
+        ),
+      );
+    }
 
     return SizedBox(
       width: 45,
       height: 20,
-      child: OverlayTextForm(
-        text: Text('Batida de ponto original: $text'),
-        controller: controller,
-        highlightColor: Colors.blue,
-        style: TextStyle(color: Colors.grey.withValues(alpha: 0.4)),
-        showActions: false,
-        inputFormatters: [
-          MaskTextInputFormatter(mask: '##:##', initialText: controller.text),
-        ],
+      child: InkWell(
+        onTap: () {
+          context.read<TableState>().setClicked(position, index);
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Color.fromRGBO(193, 193, 209, 1)),
+            borderRadius: const BorderRadius.all(Radius.circular(4)),
+          ),
+          child: Text(text),
+        ),
       ),
     );
   }

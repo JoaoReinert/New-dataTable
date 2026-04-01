@@ -293,90 +293,88 @@ class _LinceDataTableState extends State<LinceDataTable> {
                                 delegate: _LinceDataTableHeader(
                                   themeData: themeData,
                                   height: widget.headingRowHeight,
-                                  content: Expanded(
-                                    child: Row(
-                                      children: widget.fixedColumns!.indexed
-                                          .map((column) {
-                                        final handleSort =
-                                        column.$2.sortable
-                                            ? widget.onSort
-                                            : null;
+                                  content: Row(
+                                    children: widget.fixedColumns!.indexed
+                                        .map((column) {
+                                      final handleSort =
+                                      column.$2.sortable
+                                          ? widget.onSort
+                                          : null;
 
-                                        final isSorted =
-                                            _sortIndex == column.$1;
+                                      final isSorted =
+                                          _sortIndex == column.$1;
 
-                                        Widget child = Row(
-                                          children: [
-                                            Expanded(
-                                              child: column.$2.header,
-                                            ),
-                                            if (isSorted)
-                                              switch (_sortingOrder) {
-                                                SortingOrder.ascending =>
-                                                const Icon(
-                                                  Icons.arrow_drop_up,
-                                                ),
-                                                SortingOrder.descending =>
-                                                const Icon(
-                                                  Icons.arrow_drop_down,
-                                                ),
-                                                _ => const SizedBox(),
-                                              },
-                                          ],
-                                        );
-
-                                        child = Container(
-                                          width: column.$2.width,
-                                          padding: widget.itemPadding,
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              right:
-                                              column.$1 <
-                                                  widget
-                                                      .columns
-                                                      .length -
-                                                      1
-                                                  ? side
-                                                  : BorderSide.none,
-                                            ),
+                                      Widget child = Row(
+                                        children: [
+                                          Expanded(
+                                            child: column.$2.header,
                                           ),
+                                          if (isSorted)
+                                            switch (_sortingOrder) {
+                                              SortingOrder.ascending =>
+                                              const Icon(
+                                                Icons.arrow_drop_up,
+                                              ),
+                                              SortingOrder.descending =>
+                                              const Icon(
+                                                Icons.arrow_drop_down,
+                                              ),
+                                              _ => const SizedBox(),
+                                            },
+                                        ],
+                                      );
+
+                                      child = Container(
+                                        width: column.$2.width,
+                                        padding: widget.itemPadding,
+                                        decoration: BoxDecoration(
+                                          border: Border(
+                                            right:
+                                            column.$1 <
+                                                widget
+                                                    .columns
+                                                    .length -
+                                                    1
+                                                ? side
+                                                : BorderSide.none,
+                                          ),
+                                        ),
+                                        child: child,
+                                      );
+
+                                      if (column.$2.tooltip != null) {
+                                        child = Tooltip(
+                                          message: column.$2.tooltip,
                                           child: child,
                                         );
+                                      }
 
-                                        if (column.$2.tooltip != null) {
-                                          child = Tooltip(
-                                            message: column.$2.tooltip,
-                                            child: child,
+                                      child = InkWell(
+                                        onTap: handleSort == null
+                                            ? null
+                                            : () {
+                                          _handleSortChange(
+                                            column.$1,
                                           );
-                                        }
+                                          handleSort(
+                                            column.$1,
+                                            column.$2.sortKey,
+                                            _sortingOrder,
+                                          );
+                                        },
+                                        child: child,
+                                      );
 
-                                        child = InkWell(
-                                          onTap: handleSort == null
-                                              ? null
-                                              : () {
-                                            _handleSortChange(
-                                              column.$1,
-                                            );
-                                            handleSort(
-                                              column.$1,
-                                              column.$2.sortKey,
-                                              _sortingOrder,
-                                            );
-                                          },
+                                      if (column.$2.width == null) {
+                                        child = Expanded(
+                                          flex: column.$2.flex ?? 1,
                                           child: child,
                                         );
+                                      }
 
-                                        if (column.$2.width == null) {
-                                          child = Expanded(
-                                            flex: column.$2.flex ?? 1,
-                                            child: child,
-                                          );
-                                        }
-
-                                        return child;
-                                      })
-                                          .toList(),
-                                    ),
+                                      return child;
+                                    })
+                                        .toList(),
                                   ),
                                 ),
                               ),
@@ -462,90 +460,88 @@ class _LinceDataTableState extends State<LinceDataTable> {
                                     delegate: _LinceDataTableHeader(
                                       themeData: themeData,
                                       height: widget.headingRowHeight,
-                                      content: Expanded(
-                                        child: Row(
-                                          children: widget.columns.indexed.map((
-                                              column,
-                                              ) {
-                                            final handleSort =
-                                            column.$2.sortable
-                                                ? widget.onSort
-                                                : null;
+                                      content: Row(
+                                        children: widget.columns.indexed.map((
+                                            column,
+                                            ) {
+                                          final handleSort =
+                                          column.$2.sortable
+                                              ? widget.onSort
+                                              : null;
 
-                                            final isSorted =
-                                                _sortIndex == column.$1;
+                                          final isSorted =
+                                              _sortIndex == column.$1;
 
-                                            Widget child = Row(
-                                              children: [
-                                                Expanded(
-                                                  child: column.$2.header,
-                                                ),
-                                                if (isSorted)
-                                                  switch (_sortingOrder) {
-                                                    SortingOrder.ascending =>
-                                                    const Icon(
-                                                      Icons.arrow_drop_up,
-                                                    ),
-                                                    SortingOrder.descending =>
-                                                    const Icon(
-                                                      Icons.arrow_drop_down,
-                                                    ),
-                                                    _ => const SizedBox(),
-                                                  },
-                                              ],
-                                            );
-
-                                            child = Container(
-                                              width: column.$2.width,
-                                              padding: widget.itemPadding,
-                                              decoration: BoxDecoration(
-                                                border: Border(
-                                                  right:
-                                                  column.$1 <
-                                                      widget
-                                                          .columns
-                                                          .length -
-                                                          1
-                                                      ? side
-                                                      : BorderSide.none,
-                                                ),
+                                          Widget child = Row(
+                                            children: [
+                                              Expanded(
+                                                child: column.$2.header,
                                               ),
+                                              if (isSorted)
+                                                switch (_sortingOrder) {
+                                                  SortingOrder.ascending =>
+                                                  const Icon(
+                                                    Icons.arrow_drop_up,
+                                                  ),
+                                                  SortingOrder.descending =>
+                                                  const Icon(
+                                                    Icons.arrow_drop_down,
+                                                  ),
+                                                  _ => const SizedBox(),
+                                                },
+                                            ],
+                                          );
+
+                                          child = Container(
+                                            width: column.$2.width,
+                                            padding: widget.itemPadding,
+                                            decoration: BoxDecoration(
+                                              border: Border(
+                                                right:
+                                                column.$1 <
+                                                    widget
+                                                        .columns
+                                                        .length -
+                                                        1
+                                                    ? side
+                                                    : BorderSide.none,
+                                              ),
+                                            ),
+                                            child: child,
+                                          );
+
+                                          if (column.$2.tooltip != null) {
+                                            child = Tooltip(
+                                              message: column.$2.tooltip,
                                               child: child,
                                             );
+                                          }
 
-                                            if (column.$2.tooltip != null) {
-                                              child = Tooltip(
-                                                message: column.$2.tooltip,
-                                                child: child,
+                                          child = InkWell(
+                                            onTap: handleSort == null
+                                                ? null
+                                                : () {
+                                              _handleSortChange(
+                                                column.$1,
                                               );
-                                            }
+                                              handleSort(
+                                                column.$1,
+                                                column.$2.sortKey,
+                                                _sortingOrder,
+                                              );
+                                            },
+                                            child: child,
+                                          );
 
-                                            child = InkWell(
-                                              onTap: handleSort == null
-                                                  ? null
-                                                  : () {
-                                                _handleSortChange(
-                                                  column.$1,
-                                                );
-                                                handleSort(
-                                                  column.$1,
-                                                  column.$2.sortKey,
-                                                  _sortingOrder,
-                                                );
-                                              },
+                                          if (column.$2.width == null) {
+                                            child = Expanded(
+                                              flex: column.$2.flex ?? 1,
                                               child: child,
                                             );
+                                          }
 
-                                            if (column.$2.width == null) {
-                                              child = Expanded(
-                                                flex: column.$2.flex ?? 1,
-                                                child: child,
-                                              );
-                                            }
-
-                                            return child;
-                                          }).toList(),
-                                        ),
+                                          return child;
+                                        }).toList(),
                                       ),
                                     ),
                                   ),
