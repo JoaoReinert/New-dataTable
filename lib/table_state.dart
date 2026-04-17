@@ -1,39 +1,29 @@
 import 'package:flutter/material.dart';
 
-class TableState extends ChangeNotifier {
-
-  TableState() {
+class TableState<T> extends ChangeNotifier {
+  TableState(this.data) {
     _init();
   }
-  var _list = <String>[
-    '08:00',
-    '12:00',
-    '13:00',
-    '17:00',
-    '00:00',
-    '00:00',
-    '00:00',
-    '00:00',
-  ];
 
-  final _mapIndex = <String, bool>{};
+  final List<T> data;
+  final controller = TextEditingController();
+  final focusNode = FocusNode();
+  final _mapIndex = <(int, int), bool>{};
 
-  List<String> get list => _list;
+  List<T> get list => data;
 
-  Map<String, bool> get mapIndex => _mapIndex;
+  Map<(int, int), bool> get mapIndex => _mapIndex;
 
-  void setClicked(int? position, int? index) {
+  void setClicked(int position, int index) {
     _mapIndex.updateAll((key, value) => value = false);
-
-    _mapIndex["$position,$index"] = true;
-
+    _mapIndex[(position, index)] = true;
     notifyListeners();
   }
 
   void _init() {
     for (var i = 0; i < 30; i++) {
       for (final (j, item) in list.indexed) {
-        mapIndex.addAll({"$i,$j": false});
+        mapIndex.addAll({(i, j): false});
       }
     }
   }

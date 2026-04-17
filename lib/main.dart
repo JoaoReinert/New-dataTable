@@ -75,7 +75,16 @@ class _MyHomePageState extends State<_MyHomePage> {
           },
         ),
         body: ChangeNotifierProvider<TableState>(
-          create: (context) => TableState(),
+          create: (context) => TableState([
+            '08:00',
+            '12:00',
+            '13:00',
+            '17:00',
+            '00:00',
+            '00:00',
+            '00:00',
+            '00:00',
+          ]),
           child: Builder(
             builder: (context1) {
               final state = Provider.of<TableState>(context1, listen: false);
@@ -188,6 +197,8 @@ class _MyHomePageState extends State<_MyHomePage> {
                             return [Text(formattedDate)];
                           },
                           rowBuilder: (context, index) {
+                            print('build row $index');
+
                             return [
                               for (final (i, item) in state.list.indexed)
                                 _TextFormItem(
@@ -228,17 +239,23 @@ class _TextFormItem extends StatelessWidget {
       (state) => state.mapIndex["$position,$index"] ?? false,
     );
 
-    print('çççççççç321');
-
     if (clicked) {
-      final controller = TextEditingController(text: text);
+      final (controller, focusNode) = context
+          .select<TableState, (TextEditingController, FocusNode)>(
+            (state) => (state.controller, state.focusNode),
+          );
 
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        controller.text = text;
+        focusNode.requestFocus();
+      });
       return SizedBox(
         width: 45,
         height: 20,
         child: OverlayTextForm(
           text: Text('Batida de ponto original: $text'),
           controller: controller,
+          focusNode: focusNode,
           highlightColor: Colors.blue,
           style: TextStyle(color: Colors.grey.withValues(alpha: 0.4)),
           showActions: false,
